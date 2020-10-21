@@ -13,18 +13,18 @@ typedef struct{
 } Funcionario;
 
 struct tm tm;
-void args(char* arg[]);
-long data(char data[]);
-int numero_de_pessoas();
-void ler_nome(FILE *arq, char nome[40]);
-float media(Funcionario funcionario[], int num);
-int mais_velho(Funcionario funcionario[], int num);
-int ordem_alfb_func(const void *s1, const void *s2);
-void ordem_alfb(Funcionario funcionario[], int num);
-void leitura(Funcionario funcionario[], int num, char arquivo[]);
-Funcionario * dep(Funcionario funcionario[], int *num, char departamento[]);
-void print_funcionarios(Funcionario funcionario[], int num, int i,char arquivo[]);
-Funcionario set_funcionario(char nome[], float salario, char admissao[], char departamento[]);
+void args(char* arg[]);  // Chamada (inicia o codigo de fato)
+long data(char data[]);  //Chamada (transforma data em long para fazer comparações)
+int numero_de_pessoas();  // Chamada (Indentifica o numero de pessoas no arquivo de entrada)
+void ler_nome(FILE *arq, char nome[40]);  // Chamada (Faz a leitura de nome no arquivo de entrada)
+float media(Funcionario funcionario[], int num); // Case 5-6 (Tira a media de uma lista de funcionarios)
+int mais_velho(Funcionario funcionario[], int num);  // Case 3-4 (Identifica a posição do fun. mais velho da lista)
+int ordem_alfb_func(const void *s1, const void *s2);  // Case 1-2 função de comparação (Comparação por nome de struct)
+void ordem_alfb(Funcionario funcionario[], int num);  // Case 1-2 (Ordena a lista de fun.)
+void leitura(Funcionario funcionario[], int num, char arquivo[]);  //Chamada (Seta a lista de funcionarios)
+Funcionario * dep(Funcionario funcionario[], int *num, char departamento[]); // Case 2 (Gera lista de fun. por derp.)
+void print_funcionarios(Funcionario funcionario[], int num, int i,char arquivo[]); // Print e output
+Funcionario set_funcionario(char nome[], float salario, char admissao[], char departamento[]);  // Chamada (Gera lista)
 
 int main(int argc, char* argv[]){
     if(argc == 0) printf("Nenhum argumento passado");
