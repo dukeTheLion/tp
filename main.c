@@ -15,7 +15,7 @@ typedef struct{
 struct tm tm;
 void args(char* arg[]);  // Chamada (inicia o codigo de fato)
 long data(char data[]);  //Chamada (transforma data em long para fazer comparações)
-int numero_de_pessoas();  // Chamada (Indentifica o numero de pessoas no arquivo de entrada)
+int numero_de_pessoas(char arquivo[]);  // Chamada (Indentifica o numero de pessoas no arquivo de entrada)
 void ler_nome(FILE *arq, char nome[40]);  // Chamada (Faz a leitura de nome no arquivo de entrada)
 float media(Funcionario funcionario[], int num); // Case 5-6 (Tira a media de uma lista de funcionarios)
 int mais_velho(Funcionario funcionario[], int num);  // Case 3-4 (Identifica a posição do fun. mais velho da lista)
@@ -24,55 +24,55 @@ void ordem_alfb(Funcionario funcionario[], int num);  // Case 1-2 (Ordena a list
 void leitura(Funcionario funcionario[], int num, char arquivo[]);  //Chamada (Seta a lista de funcionarios)
 Funcionario * dep(Funcionario funcionario[], int *num, char departamento[]); // Case 2 (Gera lista de fun. por derp.)
 void print_funcionarios(Funcionario funcionario[], int num, int i,char arquivo[]); // Print e output
-Funcionario set_funcionario(char nome[], float salario, char admissao[], char departamento[]);  // Chamada (Gera lista)
+Funcionario set_funcionario(char nome[], float salario, char admissao[], char departamento[]);  // Chamada (Inicia fun.)
 
 int main(int argc, char* argv[]){
-    if(argc == 0) printf("Nenhum argumento passado");
-    else args(argv);
+    if(argc == 0) printf("Nenhum argumento passado");  // Pequena verificação se algum argumento foi passado
+    else args(argv);  // Inicia o programa
 
     return 0;
 }
 
 void args(char* arg[]){
-    char qst = (char) arg[2][0];
-    char *departamento =  arg[3];
+    char qst = (char) arg[2][0];  // Salva qual dos casos foi passado no terminal
 
-    int num = numero_de_pessoas();
+    int num = numero_de_pessoas(arg[1]);  // Lê o numero de pessoas no arquivo input
     int valor;
 
     Funcionario funcionario[num];
     Funcionario *temp1;
 
-    leitura(funcionario, num, arg[1]);
+    leitura(funcionario, num, arg[1]);  // Gera a lista de funcionarios
 
     switch (qst){
-        case '1':
+        case '1':  // Gera arquivo output.txt (3º argumento) com os funcionarios em ordem alfabetica
             ordem_alfb(funcionario, num);
             print_funcionarios(funcionario, num, 0, arg[3]);
             break;
-        case '2':
+        case '2':  // Printa funcionarios de um determinado departamento em ordem alfabetica
             ordem_alfb(funcionario, num);
-            temp1 = dep(funcionario, &num, departamento);
+            temp1 = dep(funcionario, &num, arg[3]);
             print_funcionarios(temp1, num, 1, NULL);
             break;
-        case '3':
+        case '3':  // Printa o funcionario mais velho
             valor = mais_velho(funcionario, num);
             temp1 = &funcionario[valor];
             print_funcionarios(temp1, 1, 1, NULL);
             break;
-        case '4':
-            temp1 = dep(funcionario, &num, departamento);
+        case '4':  // Printa o funcionario mais velho de um departamento
+            temp1 = dep(funcionario, &num, arg[3]);
             valor = mais_velho(temp1, num);
             print_funcionarios(&temp1[valor-1], 1, 1, NULL);
             break;
-        case '5':
-            printf("R$%.2f\n", media(funcionario, num));
+        case '5':  // Printa a media salarial
+            printf("R$%.2f\n\n", media(funcionario, num));
             break;
-        case '6':
-            temp1 = dep(funcionario, &num, departamento);
-            printf("R$%.2f\n", media(temp1, num));
+        case '6':  // Printa a media salarial de um departamento
+            temp1 = dep(funcionario, &num, arg[3]);
+            printf("R$%.2f\n\n", media(temp1, num));
             break;
         default:
+            printf("Segundo argumento menor que 1 ou maior que 6\n");
             break;
 
     }
@@ -82,34 +82,35 @@ long data(char data[]){
 
     time_t t;
 
-    strptime(data, "%d/%m/%Y", &tm);
+    strptime(data, "%d/%m/%Y", &tm);  // Gera uma struct tm "data" a partir de uma string
 
     tm.tm_isdst = -1;
-    t = mktime(&tm);
+    t = mktime(&tm);  // Gera a partir de tm um numero referente a data
 
     return t;
 }
 
-int numero_de_pessoas(){
+int numero_de_pessoas(char arquivo[]){
     int num;
 
     FILE *arq;
 
-    arq = fopen("input.txt", "r");
+    arq = fopen(arquivo, "r");  // Abre o arquivo em formato leitura
     if (arq == NULL) exit(0);
 
-    fscanf(arq, "%d", &num);
+    fscanf(arq, "%d", &num);  // Lê primeira linha com o numero de funcionarios
     fclose(arq);
 
     return num;
 }
 
 void ler_nome(FILE *arq, char nome[40]){
-    int count = 0;
+    int count = 0;  // Inicia contador
     char whl;
 
-    fgetc(arq);
+    fgetc(arq);  // Lê um caracter do arquivo
 
+    // Loop para ler o nome, para quando encontra a quebra de linha
     while (1){
         whl = fgetc(arq);
         if (whl == '\n') break;
@@ -119,8 +120,9 @@ void ler_nome(FILE *arq, char nome[40]){
 }
 
 float media(Funcionario funcionario[], int num){
-    float media = 0;
+    float media = 0; // Inicia a media
 
+    // Loop para ler todos os salarios da lista de uncionarios e somar na media
     for (int i = 0; i < num; ++i) {
         media += funcionario[i].salario;
     }
@@ -130,12 +132,13 @@ float media(Funcionario funcionario[], int num){
 
 void leitura(Funcionario funcionario[], int num, char arquivo[]){
     FILE *arq;
-    arq = fopen(arquivo, "r");
+    arq = fopen(arquivo, "r");  // Abre arquivo em modo leitura
 
-    if (arq == NULL) exit(0);
+    if (arq == NULL) exit(0);  // Se arquivo não for encontrado, encerra o programa
 
     fscanf(arq, "%d", &num);
 
+    // Ler as linhas e gera a lista de funcionarios
     for (int i = 0; i < num; ++i) {
         char nome[40] = {'\0'};
         float salario = 0;
@@ -150,13 +153,14 @@ void leitura(Funcionario funcionario[], int num, char arquivo[]){
         funcionario[i] = set_funcionario(nome, salario, data, setor);
     }
 
-    fclose(arq);
+    fclose(arq);  // Fecha o arquivo
 }
 
 int mais_velho(Funcionario funcionario[], int num){
-    long temp = funcionario[0].admissao_lg;
+    long temp = funcionario[0].admissao_lg;  // Inicia a variavel com a primeira dada de admissão no formato long
     int valor = 1;
 
+    // Conpara com outros da lista e retorna o valor
     for (int i = 0; i < num; ++i) {
         if(temp > funcionario[i].admissao_lg){
             temp = funcionario[i].admissao_lg;
@@ -168,16 +172,18 @@ int mais_velho(Funcionario funcionario[], int num){
 }
 
 int ordem_alfb_func(const void *s1, const void *s2){
-    Funcionario *e1 = (Funcionario *)s1; // faz o cast de void* para int*
+    // A função recebe dois ponteiros, struct[i] e struct[i+1], a apartir dai faz a comparação que retorna um int
+
+    Funcionario *e1 = (Funcionario *)s1;  // faz o cast de void* para int*
     Funcionario *e2 = (Funcionario *)s2;
 
-    int compNome = strcmp(e1->nome, e2->nome);
+    int compNome = strcmp(e1->nome, e2->nome);  // Faz comparação dos nomes
 
     return compNome;
 }
 
 void ordem_alfb(Funcionario funcionario[], int num){
-    qsort(funcionario, num, sizeof(Funcionario), ordem_alfb_func);
+    qsort(funcionario, num, sizeof(Funcionario), ordem_alfb_func);  //Sorting
 }
 
 void print_funcionarios(Funcionario funcionario[], int num, int i, char arquivo[]){
@@ -222,7 +228,7 @@ Funcionario * dep(Funcionario funcionario[], int *num, char departamento[]){
         valor1 += strcmp(funcionario[i].departamento, departamento) == 0 ? 1 : 0;
     }
 
-    Funcionario *temp = malloc(sizeof(Funcionario) * valor1); //Alocar memoria
+    Funcionario *temp = malloc(sizeof(Funcionario) * valor1); //Alocar memoria para nova lista de funcionarios
 
     for (int i = 0; i < *num; ++i) {
         if (strcmp(funcionario[i].departamento, departamento) == 0){
